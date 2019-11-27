@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+
+  flask:
+    build: ./flask
+    container_name: flask
+    restart: always
+    command: "python3 run.py"
+    links:  
+      - redis
+      - celery
+    expose:
+      - 8080
+
+  celery:
+    build: ./flask
+    command: "celery -A myapp.celery worker --loglevel=debug"
+    user: nobody
+    links: 
+      - redis  
+  
+  redis:
+    image: redis
+    ports: 
+      - "6380:6379"
+
+  nginx:
+      build: ./nginx
+      container_name: nginx
+      restart: always
+      ports:
+        - "81:81"
